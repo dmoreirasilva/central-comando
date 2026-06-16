@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Comando — Diego Moreira</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #07111F;
+  --navy2:  #0D1E38;
+  --navy3:  #132848;
+  --gold:   #C9963D;
+  --gold2:  #E8B84B;
+  --gold3:  #F5D07A;
+  --white:  #FFFFFF;
+  --g1:     #E4EAF4;
+  --g2:     #99AABF;
+  --g3:     #556070;
+  --green:  #22C55E;
+  --teal:   #14B8A6;
+  --blue:   #3B82F6;
+  --purple: #8B5CF6;
+  --rose:   #F43F5E;
+  --border: rgba(201,150,61,.18);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden}
+
+/* ── BG ── */
+.bg-noise{position:fixed;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.bg-glow-tl{position:fixed;top:-300px;left:-300px;width:900px;height:900px;background:radial-gradient(circle,rgba(201,150,61,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.bg-glow-br{position:fixed;bottom:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(59,130,246,.05) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* ── LAYOUT ── */
+.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 32px 80px}
+
+/* ── HEADER ── */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 0 28px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:40px;
+  position:sticky;top:0;
+  background:rgba(7,17,31,.92);
+  backdrop-filter:blur(20px);
+  z-index:100;
+  padding-left:32px;padding-right:32px;
+  margin-left:-32px;margin-right:-32px;
+}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-badge{
+  width:46px;height:46px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;color:var(--navy);
+  letter-spacing:-1px;
+  box-shadow:0 4px 20px rgba(201,150,61,.35);
+}
+.logo-name{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.logo-tag{font-size:11px;color:var(--gold);font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:20px}
+.live-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);
+  border-radius:20px;padding:6px 14px;
+  font-size:12px;font-weight:600;color:var(--green);
+}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.hdate{font-size:12px;color:var(--g3)}
+
+/* ── SUPER STATS ── */
+.super-stats{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  margin-bottom:48px;
+}
+.sstat{
+  background:rgba(13,30,56,.7);
+  border:1px solid var(--border);
+  border-radius:16px;padding:22px 20px;
+  position:relative;overflow:hidden;
+  transition:transform .25s,border-color .25s;
+}
+.sstat:hover{transform:translateY(-3px);border-color:rgba(201,150,61,.35)}
+.sstat::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,150,61,.04),transparent 60%);
+  pointer-events:none;
+}
+.sstat-emoji{font-size:28px;margin-bottom:12px;display:block}
+.sstat-val{font-size:34px;font-weight:900;color:var(--gold2);line-height:1}
+.sstat-lbl{font-size:11px;color:var(--g3);margin-top:6px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.sstat-sub{font-size:12px;color:var(--g2);margin-top:4px}
+
+/* ── SECTION ── */
+.section-title{
+  font-size:13px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:20px;margin-top:52px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.section-sub{font-size:26px;font-weight:800;margin-bottom:28px;margin-top:4px;letter-spacing:-.4px}
+.section-sub span{color:var(--gold2)}
+
+/* ── CARDS GRID ── */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+
+/* ── CARD BASE ── */
+.card{
+  background:rgba(13,30,56,.65);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px;
+  position:relative;overflow:hidden;
+  transition:all .3s cubic-bezier(.25,.8,.25,1);
+  backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;
+}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,150,61,.05),transparent 50%);
+  pointer-events:none;
+}
+.card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(201,150,61,.4);
+  box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(201,150,61,.1);
+}
+
+/* Acento colorido no topo do card */
+.card-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0}
+.accent-gold{background:linear-gradient(90deg,var(--gold),var(--gold2),rgba(201,150,61,0))}
+.accent-green{background:linear-gradient(90deg,var(--green),rgba(34,197,94,0))}
+.accent-blue{background:linear-gradient(90deg,var(--blue),rgba(59,130,246,0))}
+.accent-purple{background:linear-gradient(90deg,var(--purple),rgba(139,92,246,0))}
+.accent-rose{background:linear-gradient(90deg,var(--rose),rgba(244,63,94,0))}
+.accent-teal{background:linear-gradient(90deg,var(--teal),rgba(20,184,166,0))}
+
+/* Card header row */
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.card-icon-wrap{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+  flex-shrink:0;
+}
+.icon-gold{background:rgba(201,150,61,.15)}
+.icon-green{background:rgba(34,197,94,.12)}
+.icon-blue{background:rgba(59,130,246,.12)}
+.icon-purple{background:rgba(139,92,246,.12)}
+.icon-rose{background:rgba(244,63,94,.12)}
+.icon-teal{background:rgba(20,184,166,.12)}
+
+/* Status badge */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;
+  letter-spacing:.3px;
+}
+.badge::before{content:'●';font-size:7px}
+.badge-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.badge-gold{background:rgba(201,150,61,.12);color:var(--gold2);border:1px solid rgba(201,150,61,.2)}
+.badge-blue{background:rgba(59,130,246,.12);color:#93C5FD;border:1px solid rgba(59,130,246,.2)}
+.badge-purple{background:rgba(139,92,246,.12);color:#C4B5FD;border:1px solid rgba(139,92,246,.2)}
+
+/* Card body */
+.card-title{font-size:21px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px;line-height:1.25}
+.card-desc{font-size:14px;color:var(--g2);line-height:1.7;flex:1}
+
+/* Métricas */
+.metrics{
+  display:flex;gap:0;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;overflow:hidden;
+  margin:22px 0;
+}
+.metric{
+  flex:1;padding:14px 12px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.02);
+}
+.metric:last-child{border-right:none}
+.metric-val{font-size:24px;font-weight:900;color:var(--gold2);line-height:1}
+.metric-lbl{font-size:10px;color:var(--g3);margin-top:5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tag{
+  font-size:11px;padding:4px 10px;border-radius:6px;
+  background:rgba(255,255,255,.05);color:var(--g2);
+  border:1px solid rgba(255,255,255,.08);font-weight:500;
+}
+
+/* Botões */
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:11px 20px;border-radius:10px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  border:none;text-decoration:none;transition:all .2s;
+  font-family:inherit;
+}
+.btn-cta{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy)}
+.btn-cta:hover{filter:brightness(1.1);transform:scale(1.02)}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--g1);border:1px solid rgba(255,255,255,.1)}
+.btn-ghost:hover{background:rgba(255,255,255,.11);color:#fff}
+.btn-outline{background:transparent;color:var(--gold2);border:1px solid rgba(201,150,61,.3)}
+.btn-outline:hover{background:rgba(201,150,61,.1)}
+
+/* ── HERO CARDS (pinned / principais) ── */
+.hero-card{
+  background:rgba(13,30,56,.7);
+  border:1px solid rgba(201,150,61,.25);
+  border-radius:24px;
+  padding:36px 40px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+  backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;
+  min-height:280px;
+}
+.hero-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,150,61,.08),transparent 55%);
+  pointer-events:none;
+}
+.hero-card:hover{
+  border-color:rgba(201,150,61,.5);
+  transform:translateY(-5px);
+  box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 60px rgba(201,150,61,.1);
+}
+.hero-card .card-accent{border-radius:24px 24px 0 0}
+.hero-icon{font-size:48px;margin-bottom:16px;display:block}
+.hero-title{font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:10px;line-height:1.2}
+.hero-desc{font-size:14.5px;color:var(--g2);line-height:1.7;margin-bottom:24px;flex:1}
+.hero-metrics{
+  display:flex;gap:24px;
+  padding:16px 20px;
+  background:rgba(255,255,255,.04);
+  border-radius:12px;border:1px solid rgba(255,255,255,.07);
+  margin-bottom:24px;
+}
+.hero-metric-val{font-size:30px;font-weight:900;color:var(--gold2)}
+.hero-metric-lbl{font-size:11px;color:var(--g3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:3px}
+
+/* ── CARD WIDE (1 coluna) ── */
+.card-wide{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:28px;
+  align-items:center;
+  background:rgba(13,30,56,.65);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:28px 32px;
+  transition:all .3s;
+  position:relative;overflow:hidden;
+}
+.card-wide::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(201,150,61,.05),transparent 40%);
+  pointer-events:none;
+}
+.card-wide:hover{border-color:rgba(201,150,61,.4);transform:translateY(-2px);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.card-wide .card-accent{border-radius:20px 20px 0 0}
+.cw-icon{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.cw-body .card-title{font-size:19px;margin-bottom:6px}
+.cw-body .card-desc{font-size:13.5px;color:var(--g2);line-height:1.6}
+.cw-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0}
+
+/* ── SEARCH ── */
+.search-wrap{display:flex;gap:10px;align-items:center;margin-bottom:32px}
+.search{
+  flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:12px;padding:13px 18px;
+  color:var(--white);font-size:14px;font-family:inherit;outline:none;
+  transition:border-color .2s;
+}
+.search::placeholder{color:var(--g3)}
+.search:focus{border-color:rgba(201,150,61,.45)}
+.filters{display:flex;gap:6px}
+.ftab{
+  padding:10px 18px;border-radius:10px;font-size:12px;font-weight:700;
+  cursor:pointer;border:1px solid var(--border);background:transparent;
+  color:var(--g2);font-family:inherit;transition:all .2s;
+}
+.ftab.on,.ftab:hover{background:rgba(201,150,61,.12);color:var(--gold2);border-color:rgba(201,150,61,.3)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:rgba(201,150,61,.25);border-radius:3px}
+
+/* divider */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:12px 0}
+</style>
+</head>
+<body>
+
+<div class="bg-noise"></div>
+<div class="bg-glow-tl"></div>
+<div class="bg-glow-br"></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-badge">DM</div>
+    <div>
+      <div class="logo-name">Diego Moreira</div>
+      <div class="logo-tag">Central de Comando</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="hdate" id="hdate"></span>
+    <div class="live-badge"><div class="pulse"></div>9 sistemas ativos</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ═══ SUPER STATS ═══ -->
+  <div class="super-stats">
+    <div class="sstat">
+      <span class="sstat-emoji">🎙️</span>
+      <div class="sstat-val">24</div>
+      <div class="sstat-lbl">Áudios Hipnose</div>
+      <div class="sstat-sub">MP3 + MP4 prontos</div>
+    </div>
+    <div class="sstat">
+      <span class="sstat-emoji">✈️</span>
+      <div class="sstat-val">52</div>
+      <div class="sstat-lbl">Clientes Milhas</div>
+      <div class="sstat-sub">Cotações diárias 8h30</div>
+    </div>
+    <div class="sstat">
+      <span class="sstat-emoji">📸</span>
+      <div class="sstat-val">17,2k</div>
+      <div class="sstat-lbl">Seguidores</div>
+      <div class="sstat-sub">@diegomoreiraoficial__</div>
+    </div>
+    <div class="sstat">
+      <span class="sstat-emoji">💰</span>
+      <div class="sstat-val">R$25</div>
+      <div class="sstat-lbl">Google Ads/dia</div>
+      <div class="sstat-sub">Campanha ativa 24/7</div>
+    </div>
+    <div class="sstat">
+      <span class="sstat-emoji">🌐</span>
+      <div class="sstat-val">5</div>
+      <div class="sstat-lbl">Sites Publicados</div>
+      <div class="sstat-sub">GitHub Pages ao vivo</div>
+    </div>
+  </div>
+
+  <!-- ═══ SEARCH ═══ -->
+  <div class="search-wrap">
+    <input type="text" class="search" placeholder="🔍  Buscar qualquer coisa..." oninput="search(this.value)">
+    <div class="filters">
+      <button class="ftab on" onclick="ftab(this,'todos')">Todos</button>
+      <button class="ftab" onclick="ftab(this,'ativo')">⚡ Ativos</button>
+      <button class="ftab" onclick="ftab(this,'automatico')">🤖 Automações</button>
+      <button class="ftab" onclick="ftab(this,'publicado')">🌐 Publicados</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       PRINCIPAIS — OS QUE VOCÊ MAIS USA
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">📌 PRINCIPAIS</div>
+  <div class="section-sub">O que você mais usa <span>todo dia</span></div>
+
+  <div class="grid-2" style="margin-bottom:24px">
+
+    <!-- YOUTUBE SONO -->
+    <div class="hero-card" data-cat="sono" data-st="pronto">
+      <div class="card-accent accent-gold"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">🌙</span>
+        <span class="badge badge-gold">24 prontos</span>
+      </div>
+      <div class="hero-title">YouTube Reset do Sono</div>
+      <div class="hero-desc">24 áudios de hipnose com voz Voxtral + chuva sidechain. 24 vídeos MP4 + 24 Shorts verticais + 24 capas no estilo do canal. Tudo YouTube-válido e pronto para upload.</div>
+      <div class="hero-metrics">
+        <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Áudios MP3</div></div>
+        <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Vídeos MP4</div></div>
+        <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Shorts 9:16</div></div>
+        <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Capas PNG</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://www.youtube.com/@DiegoMoreiraResetdoSono" target="_blank" class="btn btn-cta">📺 Canal YouTube</a>
+        <span class="btn btn-ghost">📂 Desktop/audios-youtube-sono</span>
+        <span class="btn btn-ghost">📂 Desktop/capas-youtube-sono</span>
+      </div>
+    </div>
+
+    <!-- MILHAS AUTOMÁTICO -->
+    <div class="hero-card" data-cat="milhas automacao" data-st="automatico">
+      <div class="card-accent accent-teal"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">✈️</span>
+        <span class="badge badge-green">Automático 8h30</span>
+      </div>
+      <div class="hero-title">Milhas & Viagens — 52 Clientes</div>
+      <div class="hero-desc">Script roda todo dia às 8h30, gera PDF personalizado com roteiros, hotéis e cálculo de milhas para cada um dos 52 clientes. Envia por email via Gmail SMTP automaticamente.</div>
+      <div class="hero-metrics">
+        <div><div class="hero-metric-val">52</div><div class="hero-metric-lbl">Clientes</div></div>
+        <div><div class="hero-metric-val">08h30</div><div class="hero-metric-lbl">Disparo</div></div>
+        <div><div class="hero-metric-val">PDF</div><div class="hero-metric-lbl">Por cliente</div></div>
+      </div>
+      <div class="actions">
+        <a href="../viagens-milhas/index.html" target="_blank" class="btn btn-cta">🔗 Ver Painel</a>
+        <span class="btn btn-ghost">📂 workspace/milhas/</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-3" style="margin-bottom:48px">
+
+    <!-- GOOGLE ADS -->
+    <div class="hero-card" data-cat="trafego" data-st="ativo">
+      <div class="card-accent accent-green"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">🎯</span>
+        <span class="badge badge-green">Ativo 24/7</span>
+      </div>
+      <div class="hero-title">Google Ads<br>Hipnoterapia</div>
+      <div class="hero-desc">Campanha RSA na Rede de Pesquisa com 8 keywords de dor do executivo. Monitor automático 2x/dia (8h05 + 18h05) com alerta e auto-pausa se gastar demais.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">R$25</div><div class="metric-lbl">Diário</div></div>
+        <div class="metric"><div class="metric-val">8</div><div class="metric-lbl">Keywords</div></div>
+        <div class="metric"><div class="metric-val">RSA</div><div class="metric-lbl">Formato</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://ads.google.com/" target="_blank" class="btn btn-cta">🔗 Google Ads</a>
+        <span class="btn btn-ghost">📂 apps/google-ads-monitor</span>
+      </div>
+    </div>
+
+    <!-- INSTAGRAM -->
+    <div class="hero-card" data-cat="instagram" data-st="ativo">
+      <div class="card-accent accent-rose"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">📸</span>
+        <span class="badge badge-green">Ativo</span>
+      </div>
+      <div class="hero-title">Instagram<br>@diegomoreiraoficial__</div>
+      <div class="hero-desc">3.477 perfis analisados. Top engajadores mapeados (Marcelo Tigre 137k, Monique 49k, Alexandre Campos Hipno 11k). 40 stories gancho+depoimento prontos.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">17,2k</div><div class="metric-lbl">Seguidores</div></div>
+        <div class="metric"><div class="metric-val">3.477</div><div class="metric-lbl">Perfis mapeados</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://www.instagram.com/diegomoreiraoficial__/" target="_blank" class="btn btn-cta">📸 Perfil</a>
+        <span class="btn btn-ghost">📂 Desktop/instagram_top_engajadores.txt</span>
+      </div>
+    </div>
+
+    <!-- DIAGNÓSTICO NR-1 -->
+    <div class="hero-card" data-cat="reset" data-st="publicado">
+      <div class="card-accent accent-purple"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">🩺</span>
+        <span class="badge badge-purple">Publicado</span>
+      </div>
+      <div class="hero-title">Diagnóstico NR-1<br>Ansiedade</div>
+      <div class="hero-desc">Site público com diagnóstico interativo, cálculo de risco automático e geração de proposta personalizada via Google Apps Script. PDF Chrome headless.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">GAS v5</div><div class="metric-lbl">Backend</div></div>
+        <div class="metric"><div class="metric-val">PDF</div><div class="metric-lbl">Auto-gerado</div></div>
+        <div class="metric"><div class="metric-val">5</div><div class="metric-lbl">Seções</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://dmoreirasilva.github.io/diagnostico-nr1/" target="_blank" class="btn btn-cta">🔗 Abrir Site</a>
+        <a href="https://github.com/dmoreirasilva/diagnostico-nr1" target="_blank" class="btn btn-ghost">GitHub</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       YOUTUBE — MAIS DETALHES
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">🎬 YOUTUBE RESET DO SONO</div>
+  <div class="section-sub">Produção completa de <span>conteúdo de hipnose</span></div>
+
+  <div class="grid-4" style="margin-bottom:48px">
+
+    <div class="card" data-cat="sono" data-st="pronto">
+      <div class="card-accent accent-gold"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-gold">🎙️</div>
+        <span class="badge badge-gold">24 arquivos</span>
+      </div>
+      <div class="card-title">24 Áudios MP3</div>
+      <div class="card-desc">Voz Voxtral TTS + chuva sidechain ducking. ~30min cada. 24 situações de líder que não consegue dormir.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">24</div><div class="metric-lbl">Áudios</div></div>
+        <div class="metric"><div class="metric-val">~30min</div><div class="metric-lbl">Cada</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-outline">📂 Desktop/audios-youtube-sono</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="sono" data-st="pronto">
+      <div class="card-accent accent-gold"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-gold">🎬</div>
+        <span class="badge badge-gold">YouTube-válido</span>
+      </div>
+      <div class="card-title">24 Vídeos MP4</div>
+      <div class="card-desc">H.264 1280×720, AAC 48kHz stereo 236kbps. Capa estática com título. Prontos para upload como vídeo longo.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">720p</div><div class="metric-lbl">Resolução</div></div>
+        <div class="metric"><div class="metric-val">~34MB</div><div class="metric-lbl">Cada</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://www.youtube.com/@DiegoMoreiraResetdoSono" target="_blank" class="btn btn-cta">📺 Canal</a>
+      </div>
+    </div>
+
+    <div class="card" data-cat="sono" data-st="pronto">
+      <div class="card-accent accent-blue"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-blue">📱</div>
+        <span class="badge badge-blue">Vertical 9:16</span>
+      </div>
+      <div class="card-title">24 YouTube Shorts</div>
+      <div class="card-desc">1080×1920 × 42s. AAC 48kHz stereo. Design premium azul + dourado. Prontos para upload como Shorts.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">1080×1920</div><div class="metric-lbl">Formato</div></div>
+        <div class="metric"><div class="metric-val">42s</div><div class="metric-lbl">Duração</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-outline">📂 Desktop/audios-youtube-sono</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="sono" data-st="pronto">
+      <div class="card-accent accent-purple"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-purple">🖼️</div>
+        <span class="badge badge-purple">Estilo canal</span>
+      </div>
+      <div class="card-title">24 Thumbnails</div>
+      <div class="card-desc">1280×720. Fundo noturno + cutout AI do Diego (rembg) + texto Impact enorme. Modeladas a partir das thumbnails reais do canal.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">AI</div><div class="metric-lbl">Cutout rembg</div></div>
+        <div class="metric"><div class="metric-val">Impact</div><div class="metric-lbl">Fonte</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-outline">📂 Desktop/capas-youtube-sono</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       RESET DA ANSIEDADE
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">🧠 INSTITUTO RESET DA ANSIEDADE</div>
+  <div class="section-sub">Sites, ferramentas e <span>conteúdo do método</span></div>
+
+  <div class="grid-3" style="margin-bottom:48px">
+
+    <div class="card" data-cat="reset" data-st="publicado">
+      <div class="card-accent accent-purple"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-purple">🎯</div>
+        <span class="badge badge-purple">Publicado</span>
+      </div>
+      <div class="card-title">Landing Page Principal</div>
+      <div class="card-desc">Landing completa do Método RESET com barra de urgência, 14 seções, social proof, benefícios, ROI e CTA WhatsApp. Design premium azul + dourado.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">14</div><div class="metric-lbl">Seções</div></div>
+        <div class="metric"><div class="metric-val">CRO</div><div class="metric-lbl">Otimizado</div></div>
+        <div class="metric"><div class="metric-val">Mobile</div><div class="metric-lbl">Responsivo</div></div>
+      </div>
+      <div class="actions">
+        <a href="../reset-ansiedade/index.html" target="_blank" class="btn btn-cta">🔗 Abrir</a>
+      </div>
+    </div>
+
+    <div class="card" data-cat="reset" data-st="publicado">
+      <div class="card-accent accent-purple"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-purple">🏢</div>
+        <span class="badge badge-purple">Publicado</span>
+      </div>
+      <div class="card-title">RESET Empresarial B2B</div>
+      <div class="card-desc">Landing para empresas: programa 6/12 meses, ROI calculado, FormSubmit ativo. Focado em gestores e equipes corporativas — NR-1 e saúde mental.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">6/12</div><div class="metric-lbl">Meses</div></div>
+        <div class="metric"><div class="metric-val">B2B</div><div class="metric-lbl">Foco</div></div>
+        <div class="metric"><div class="metric-val">ROI</div><div class="metric-lbl">Calculado</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://dmoreirasilva.github.io/reset-empresarial/" target="_blank" class="btn btn-cta">🔗 Abrir</a>
+      </div>
+    </div>
+
+    <div class="card" data-cat="reset" data-st="publicado">
+      <div class="card-accent accent-purple"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-purple">📖</div>
+        <span class="badge badge-blue">Completo</span>
+      </div>
+      <div class="card-title">Livro "Herdado, Não Definido"</div>
+      <div class="card-desc">Livro completo com a voz e história de Diego: Prólogo + 11 capítulos + Epílogo. HTML + PDF no Desktop. Pronto para publicação ou lançamento.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">13</div><div class="metric-lbl">Capítulos</div></div>
+        <div class="metric"><div class="metric-val">PDF</div><div class="metric-lbl">Pronto</div></div>
+        <div class="metric"><div class="metric-val">100%</div><div class="metric-lbl">Completo</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-ghost">📂 Desktop/livro</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="reset" data-st="publicado">
+      <div class="card-accent accent-purple"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-purple">🔮</div>
+        <span class="badge badge-purple">Publicado</span>
+      </div>
+      <div class="card-title">Questionário Legado de Hermes</div>
+      <div class="card-desc">Quiz comportamental (DISC + MBTI + Spranger) com 4 perfis de resultado. EmailJS envia respostas automaticamente para Gmail.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">4</div><div class="metric-lbl">Perfis</div></div>
+        <div class="metric"><div class="metric-val">EmailJS</div><div class="metric-lbl">Ativo</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://dmoreirasilva.github.io/questionario-legado-hermes/" target="_blank" class="btn btn-cta">🔗 Abrir Quiz</a>
+      </div>
+    </div>
+
+    <div class="card" data-cat="reset" data-st="publicado">
+      <div class="card-accent accent-gold"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-gold">👑</div>
+        <span class="badge badge-purple">Publicado</span>
+      </div>
+      <div class="card-title">Perfil @olegadodehermes</div>
+      <div class="card-desc">Site de apresentação com perfil comportamental completo: DISC I/S, INFJ, Spranger espiritual. Identidade mármore + dourado #B8963E + roxo.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">DISC</div><div class="metric-lbl">I/S</div></div>
+        <div class="metric"><div class="metric-val">INFJ</div><div class="metric-lbl">MBTI</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://dmoreirasilva.github.io/perfil-olegadodehermes/" target="_blank" class="btn btn-cta">🔗 Abrir</a>
+      </div>
+    </div>
+
+    <div class="card" data-cat="reset automacao" data-st="automatico">
+      <div class="card-accent accent-gold"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-gold">📧</div>
+        <span class="badge badge-gold">Automático 7h03</span>
+      </div>
+      <div class="card-title">Email Automático Diário</div>
+      <div class="card-desc">Apps Script v13 com email às 7h03 e auto-renovação. Gmail SMTP como fallback via Python. LaunchAgent macOS garantindo execução.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">07h03</div><div class="metric-lbl">Disparo</div></div>
+        <div class="metric"><div class="metric-val">v13</div><div class="metric-lbl">Versão</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-ghost">📂 apps/perfil-comportamental</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       INSTAGRAM
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">📸 INSTAGRAM</div>
+  <div class="section-sub">Análise, conteúdo e <span>estratégia</span></div>
+
+  <div class="grid-3" style="margin-bottom:48px">
+
+    <div class="card" data-cat="instagram" data-st="pronto">
+      <div class="card-accent accent-rose"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-rose">📊</div>
+        <span class="badge badge-blue">Pronto</span>
+      </div>
+      <div class="card-title">Top Engajadores — 47 Posts</div>
+      <div class="card-desc">3.477 perfis mapeados. Top: Marcelo Tigre (137k), Monique Akahai (49k), Gabi Artz (133k), Alexandre Campos Hipno (11k). Lista completa no Desktop.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">3.477</div><div class="metric-lbl">Perfis</div></div>
+        <div class="metric"><div class="metric-val">47</div><div class="metric-lbl">Posts</div></div>
+        <div class="metric"><div class="metric-val">30</div><div class="metric-lbl">Top contatos</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-cta">📂 instagram_top_engajadores.txt</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="instagram" data-st="pronto">
+      <div class="card-accent accent-rose"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-rose">📖</div>
+        <span class="badge badge-blue">Prontos</span>
+      </div>
+      <div class="card-title">40 Stories Prontos</div>
+      <div class="card-desc">Stories de gancho de palestra + depoimento de alunos. Baixados via instaloader. Prontos para repostar como prova social contínua.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">40</div><div class="metric-lbl">Stories</div></div>
+        <div class="metric"><div class="metric-val">2</div><div class="metric-lbl">Formatos</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://www.instagram.com/diegomoreiraoficial__/" target="_blank" class="btn btn-cta">📸 Perfil</a>
+        <span class="btn btn-ghost">📂 Desktop/STORIES</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="instagram" data-st="pronto">
+      <div class="card-accent accent-rose"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-rose">📈</div>
+        <span class="badge badge-blue">Pronto</span>
+      </div>
+      <div class="card-title">Estratégia Orgânica 30 Dias</div>
+      <div class="card-desc">4 pilares de conteúdo para atrair executivos, bio recomendada, calendário de 30 dias, regras de voz e diagnóstico completo do perfil atual.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">4</div><div class="metric-lbl">Pilares</div></div>
+        <div class="metric"><div class="metric-val">30</div><div class="metric-lbl">Dias</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://www.instagram.com/diegomoreiraoficial__/" target="_blank" class="btn btn-cta">📸 Ver Perfil</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TRÁFEGO PAGO
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">💰 TRÁFEGO PAGO</div>
+  <div class="section-sub">Campanhas e <span>automações de ads</span></div>
+
+  <!-- Cards wide para tráfego -->
+  <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:48px">
+
+    <div class="card-wide" data-cat="trafego" data-st="ativo">
+      <div class="card-accent accent-green"></div>
+      <div class="cw-icon icon-green">🎯</div>
+      <div class="cw-body">
+        <div class="card-title">Campanha Google Ads — Rede de Pesquisa 01</div>
+        <div class="card-desc">RSA ativo com keywords de dor do executivo ansioso: "ansiedade no trabalho", "hipnoterapia para ansiedade", etc. Orçamento R$25/dia, rodando 24/7.</div>
+        <div class="tags" style="margin-top:10px">
+          <span class="tag">RSA</span><span class="tag">Rede de Pesquisa</span><span class="tag">8 Keywords</span><span class="tag">Executivos</span>
+        </div>
+      </div>
+      <div class="cw-right">
+        <span class="badge badge-green">Ativo 24/7</span>
+        <a href="https://ads.google.com/" target="_blank" class="btn btn-cta">🔗 Abrir Ads</a>
+        <span style="font-size:28px;font-weight:900;color:var(--gold2)">R$25<span style="font-size:13px;color:var(--g3);font-weight:500">/dia</span></span>
+      </div>
+    </div>
+
+    <div class="card-wide" data-cat="trafego automacao" data-st="automatico">
+      <div class="card-accent accent-gold"></div>
+      <div class="cw-icon icon-gold">🤖</div>
+      <div class="cw-body">
+        <div class="card-title">Monitor Automático de Gastos — 2x/dia</div>
+        <div class="card-desc">LaunchAgent macOS roda às 8h05 e 18h05. Verifica gasto da campanha via Playwright. Se gastar mais que R$28: envia alerta por email e pausa automaticamente.</div>
+        <div class="tags" style="margin-top:10px">
+          <span class="tag">LaunchAgent</span><span class="tag">Playwright</span><span class="tag">Email alerta</span><span class="tag">Auto-pausa</span>
+        </div>
+      </div>
+      <div class="cw-right">
+        <span class="badge badge-gold">Automático</span>
+        <span class="btn btn-ghost">📂 apps/google-ads-monitor</span>
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:900;color:var(--green)">R$28</div>
+          <div style="font-size:10px;color:var(--g3);font-weight:600;letter-spacing:.5px;text-transform:uppercase">Limite alerta</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MILHAS & VIAGENS
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">✈️ MILHAS & VIAGENS</div>
+  <div class="section-sub">Gestão de clientes e <span>automações de viagem</span></div>
+
+  <div class="grid-3" style="margin-bottom:48px">
+
+    <div class="card" data-cat="milhas" data-st="pronto">
+      <div class="card-accent accent-teal"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-teal">🗺️</div>
+        <span class="badge badge-green">Enviado 07/06</span>
+      </div>
+      <div class="card-title">Análise Jefferson — Cancún #1</div>
+      <div class="card-desc">Análise individual: Cancún 9.2/10 como destino #1. Roteiro completo, hotéis, cálculo de milhas. Email enviado em 07/06/2026 via SMTP.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">9.2</div><div class="metric-lbl">Score</div></div>
+        <div class="metric"><div class="metric-val">#1</div><div class="metric-lbl">Destino</div></div>
+        <div class="metric"><div class="metric-val">✅</div><div class="metric-lbl">Enviado</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-ghost">📂 docs/viagens-milhas</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="milhas" data-st="pronto">
+      <div class="card-accent accent-teal"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-teal">🎟️</div>
+        <span class="badge badge-blue">Pronto</span>
+      </div>
+      <div class="card-title">Evento Bússola dos Viajantes</div>
+      <div class="card-desc">Evento 2 dias: App R$564/ano + Formação R$12k. Headline, cronograma completo, 6 fases estruturadas. Material no Desktop.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">2</div><div class="metric-lbl">Dias</div></div>
+        <div class="metric"><div class="metric-val">R$12k</div><div class="metric-lbl">Oferta alta</div></div>
+        <div class="metric"><div class="metric-val">6</div><div class="metric-lbl">Fases</div></div>
+      </div>
+      <div class="actions">
+        <span class="btn btn-ghost">📂 Desktop/EVENTO-BUSSOLA</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="milhas" data-st="publicado">
+      <div class="card-accent accent-blue"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-blue">📊</div>
+        <span class="badge badge-blue">Atualizado 2026</span>
+      </div>
+      <div class="card-title">Intel de Mercado — Milhas 2026</div>
+      <div class="card-desc">Livelo ratios atualizados (Flying Blue 3.5:1, Emirates 2:1), LATAM +20% mar/2026, Copa 2026 jun-jul. Preços round-trip por rota e categoria.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">RT</div><div class="metric-lbl">Round-trip</div></div>
+        <div class="metric"><div class="metric-val">Copa</div><div class="metric-lbl">Jun-Jul 26</div></div>
+      </div>
+      <div class="actions">
+        <a href="../viagens-milhas/index.html" target="_blank" class="btn btn-cta">🔗 Painel</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ASSETS & OUTROS
+  ═══════════════════════════════════════════ -->
+  <div class="section-title">📦 ASSETS & OUTROS PROJETOS</div>
+  <div class="section-sub">Sites de parceiros e <span>ferramentas auxiliares</span></div>
+
+  <div class="grid-4" style="margin-bottom:48px">
+
+    <div class="card" data-cat="assets" data-st="publicado">
+      <div class="card-accent accent-purple"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-purple">💼</div>
+        <span class="badge badge-purple">Publicado</span>
+      </div>
+      <div class="card-title">Site Larissa Machado</div>
+      <div class="card-desc">14 seções, design branco + lilás, GitHub Pages ativo. Psicanalista/Reprogramadora — parceira do Instituto.</div>
+      <div class="actions" style="margin-top:20px">
+        <a href="https://dmoreirasilva.github.io/larissa-machado-site/" target="_blank" class="btn btn-cta">🔗 Abrir</a>
+      </div>
+    </div>
+
+    <div class="card" data-cat="assets" data-st="pronto">
+      <div class="card-accent accent-blue"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-blue">🎭</div>
+        <span class="badge badge-blue">Aguardando API</span>
+      </div>
+      <div class="card-title">Higgsfield Squad</div>
+      <div class="card-desc">Squad de vídeo AI configurado. Campanha "História do Major" com foto de Diego pronta. Falta API key para gerar vídeos.</div>
+      <div class="actions" style="margin-top:20px">
+        <span class="btn btn-ghost">📂 apps/higgsfield-manager</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="sono assets" data-st="pronto">
+      <div class="card-accent accent-gold"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-gold">⚙️</div>
+        <span class="badge badge-gold">5 scripts</span>
+      </div>
+      <div class="card-title">Pipeline TTS Voxtral</div>
+      <div class="card-desc">Scripts Python: roteiro → TTS → PCM → MP3 + chuva → MP4 → Short → Thumbnail. Cache de 517 chunks. Reutilizável para novos áudios.</div>
+      <div class="actions" style="margin-top:20px">
+        <span class="btn btn-ghost">📂 workspace/youtube-reset-sono/scripts</span>
+      </div>
+    </div>
+
+    <div class="card" data-cat="assets" data-st="ativo">
+      <div class="card-accent accent-green"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-green">🧠</div>
+        <span class="badge badge-green">Ativo</span>
+      </div>
+      <div class="card-title">Contexto AIOX — 2 Negócios</div>
+      <div class="card-desc">Base de conhecimento completa: Instituto Reset + Gestor de Milhas. ICP, brand DNA, produtos, voz do fundador — tudo salvo em YAML.</div>
+      <div class="actions" style="margin-top:20px">
+        <span class="btn btn-ghost">📂 workspace/businesses/</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:32px 0 0;border-top:1px solid var(--border)">
+    <div style="color:var(--g3);font-size:12px;line-height:2">
+      Central de Comando — Diego Moreira &nbsp;·&nbsp; Construído com Claude Code &nbsp;·&nbsp; Junho 2026<br>
+      <span style="color:var(--gold);font-weight:600">28 projetos</span> · <span style="color:var(--green);font-weight:600">8 automações ativas</span> · <span style="color:var(--blue);font-weight:600">5 sites publicados</span>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// Data
+const d = new Date();
+document.getElementById('hdate').textContent =
+  d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+
+// Busca
+function search(q){
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.card,.hero-card,.card-wide').forEach(c=>{
+    c.style.display = !q || c.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// Filtros de status
+function ftab(btn, val){
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.card,.hero-card,.card-wide').forEach(c=>{
+    if(val==='todos'){ c.style.display=''; return; }
+    const st = c.dataset.st || '';
+    c.style.display = st===val ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
