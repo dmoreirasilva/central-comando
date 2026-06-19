@@ -317,6 +317,7 @@ header{
   </div>
   <div class="header-right">
     <span class="hdate" id="hdate"></span>
+    <span class="hdate" id="last-update" style="color:var(--gold);font-size:11px"></span>
     <div class="live-badge"><div class="pulse"></div>9 sistemas ativos</div>
   </div>
 </header>
@@ -327,31 +328,31 @@ header{
   <div class="super-stats">
     <div class="sstat">
       <span class="sstat-emoji">🎙️</span>
-      <div class="sstat-val">24</div>
+      <div class="sstat-val" id="stat-audios">24</div>
       <div class="sstat-lbl">Áudios Hipnose</div>
       <div class="sstat-sub">MP3 + MP4 prontos</div>
     </div>
     <div class="sstat">
       <span class="sstat-emoji">✈️</span>
-      <div class="sstat-val">52</div>
+      <div class="sstat-val" id="stat-clientes">52</div>
       <div class="sstat-lbl">Clientes Milhas</div>
       <div class="sstat-sub">Cotações diárias 8h30</div>
     </div>
     <div class="sstat">
       <span class="sstat-emoji">📸</span>
-      <div class="sstat-val">17,2k</div>
+      <div class="sstat-val" id="stat-seguidores">17,2k</div>
       <div class="sstat-lbl">Seguidores</div>
       <div class="sstat-sub">@diegomoreiraoficial__</div>
     </div>
     <div class="sstat">
       <span class="sstat-emoji">💰</span>
-      <div class="sstat-val">R$25</div>
+      <div class="sstat-val" id="stat-ads-budget">R$25</div>
       <div class="sstat-lbl">Google Ads/dia</div>
-      <div class="sstat-sub">Campanha ativa 24/7</div>
+      <div class="sstat-sub" id="stat-ads-status">Campanha ativa 24/7</div>
     </div>
     <div class="sstat">
       <span class="sstat-emoji">🌐</span>
-      <div class="sstat-val">5</div>
+      <div class="sstat-val" id="stat-sites">6</div>
       <div class="sstat-lbl">Sites Publicados</div>
       <div class="sstat-sub">GitHub Pages ao vivo</div>
     </div>
@@ -374,7 +375,7 @@ header{
   <div class="section-title">📌 PRINCIPAIS</div>
   <div class="section-sub">O que você mais usa <span>todo dia</span></div>
 
-  <div class="grid-2" style="margin-bottom:24px">
+  <div class="grid-3" style="margin-bottom:24px">
 
     <!-- YOUTUBE SONO -->
     <div class="hero-card" data-cat="sono" data-st="pronto">
@@ -386,10 +387,10 @@ header{
       <div class="hero-title">YouTube Reset do Sono</div>
       <div class="hero-desc">24 áudios de hipnose com voz Voxtral + chuva sidechain. 24 vídeos MP4 + 24 Shorts verticais + 24 capas no estilo do canal. Tudo YouTube-válido e pronto para upload.</div>
       <div class="hero-metrics">
+        <div><div class="hero-metric-val" id="yt-subs">99</div><div class="hero-metric-lbl">Inscritos</div></div>
+        <div><div class="hero-metric-val" id="yt-videos">16</div><div class="hero-metric-lbl">Vídeos</div></div>
         <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Áudios MP3</div></div>
-        <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Vídeos MP4</div></div>
         <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Shorts 9:16</div></div>
-        <div><div class="hero-metric-val">24</div><div class="hero-metric-lbl">Capas PNG</div></div>
       </div>
       <div class="actions">
         <a href="https://www.youtube.com/@DiegoMoreiraResetdoSono" target="_blank" class="btn btn-cta">📺 Canal YouTube</a>
@@ -418,9 +419,50 @@ header{
       </div>
     </div>
 
+    <!-- CRM FUNIL COMERCIAL -->
+    <div class="hero-card" data-cat="crm comercial" data-st="ativo">
+      <div class="card-accent accent-blue"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">🗂️</span>
+        <span class="badge badge-blue">Local · :3000</span>
+      </div>
+      <div class="hero-title">CRM Funil<br>Comercial</div>
+      <div class="hero-desc">Kanban drag & drop com 5 etapas, templates WhatsApp, painel de conversão, tarefas com lembrete e filtro por negócio. Instituto + Milhas em um único lugar.</div>
+      <div class="hero-metrics">
+        <div><div class="hero-metric-val">5</div><div class="hero-metric-lbl">Etapas</div></div>
+        <div><div class="hero-metric-val">2</div><div class="hero-metric-lbl">Negócios</div></div>
+        <div><div class="hero-metric-val">WPP</div><div class="hero-metric-lbl">Templates</div></div>
+        <div><div class="hero-metric-val">JSON</div><div class="hero-metric-lbl">Persistência</div></div>
+      </div>
+      <div class="actions">
+        <a href="http://localhost:3000" target="_blank" class="btn btn-cta">🔗 Abrir CRM</a>
+        <span class="btn btn-ghost">📂 Desktop/crm-diego</span>
+      </div>
+    </div>
+
   </div>
 
-  <div class="grid-3" style="margin-bottom:48px">
+  <div class="grid-4" style="margin-bottom:48px">
+
+    <!-- EBOOK GASTOS SÃO VIAGENS -->
+    <div class="hero-card" data-cat="milhas" data-st="publicado">
+      <div class="card-accent accent-gold"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+        <span class="hero-icon">📖</span>
+        <span class="badge badge-gold">Site Público</span>
+      </div>
+      <div class="hero-title">Ebook<br>Gastos São Viagens</div>
+      <div class="hero-desc">Guia completo de gestão de milhas: multiplicação de pontos, cotações a preços raros, acesso global a programas, concierge e assessoria jurídica.</div>
+      <div class="hero-metrics">
+        <div><div class="hero-metric-val">7</div><div class="hero-metric-lbl">Capítulos</div></div>
+        <div><div class="hero-metric-val">2x</div><div class="hero-metric-lbl">Garantia</div></div>
+        <div><div class="hero-metric-val">Web</div><div class="hero-metric-lbl">Publicado</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://dmoreirasilva.github.io/ebook-viagens-milhas/" target="_blank" class="btn btn-cta">🔗 Abrir Ebook</a>
+        <a href="https://github.com/dmoreirasilva/ebook-viagens-milhas" target="_blank" class="btn btn-ghost">GitHub</a>
+      </div>
+    </div>
 
     <!-- GOOGLE ADS -->
     <div class="hero-card" data-cat="trafego" data-st="ativo">
@@ -452,7 +494,7 @@ header{
       <div class="hero-title">Instagram<br>@diegomoreiraoficial__</div>
       <div class="hero-desc">3.477 perfis analisados. Top engajadores mapeados (Marcelo Tigre 137k, Monique 49k, Alexandre Campos Hipno 11k). 40 stories gancho+depoimento prontos.</div>
       <div class="metrics">
-        <div class="metric"><div class="metric-val">17,2k</div><div class="metric-lbl">Seguidores</div></div>
+        <div class="metric"><div class="metric-val" id="ig-followers">17,2k</div><div class="metric-lbl">Seguidores</div></div>
         <div class="metric"><div class="metric-val">3.477</div><div class="metric-lbl">Perfis mapeados</div></div>
       </div>
       <div class="actions">
@@ -793,7 +835,24 @@ header{
   <div class="section-title">✈️ MILHAS & VIAGENS</div>
   <div class="section-sub">Gestão de clientes e <span>automações de viagem</span></div>
 
-  <div class="grid-3" style="margin-bottom:48px">
+  <div class="grid-4" style="margin-bottom:48px">
+
+    <div class="card" data-cat="milhas" data-st="publicado">
+      <div class="card-accent accent-gold"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap icon-gold">📖</div>
+        <span class="badge badge-gold">Site Público</span>
+      </div>
+      <div class="card-title">Ebook — Gastos São Viagens</div>
+      <div class="card-desc">Guia completo de gestão de milhas publicado como site. Multiplicação de pontos, cotações raras, acesso global, concierge e assessoria jurídica. Link para enviar a clientes.</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val">7</div><div class="metric-lbl">Capítulos</div></div>
+        <div class="metric"><div class="metric-val">Web</div><div class="metric-lbl">Online</div></div>
+      </div>
+      <div class="actions">
+        <a href="https://dmoreirasilva.github.io/ebook-viagens-milhas/" target="_blank" class="btn btn-cta">🔗 Abrir Ebook</a>
+      </div>
+    </div>
 
     <div class="card" data-cat="milhas" data-st="pronto">
       <div class="card-accent accent-teal"></div>
@@ -916,19 +975,71 @@ header{
   <div style="text-align:center;padding:32px 0 0;border-top:1px solid var(--border)">
     <div style="color:var(--g3);font-size:12px;line-height:2">
       Central de Comando — Diego Moreira &nbsp;·&nbsp; Construído com Claude Code &nbsp;·&nbsp; Junho 2026<br>
-      <span style="color:var(--gold);font-weight:600">28 projetos</span> · <span style="color:var(--green);font-weight:600">8 automações ativas</span> · <span style="color:var(--blue);font-weight:600">5 sites publicados</span>
+      <span style="color:var(--gold);font-weight:600">29 projetos</span> · <span style="color:var(--green);font-weight:600">8 automações ativas</span> · <span style="color:var(--blue);font-weight:600">5 sites publicados</span>
     </div>
   </div>
 
 </div><!-- /wrap -->
 
 <script>
-// Data
+// Data atual no header
 const d = new Date();
 document.getElementById('hdate').textContent =
   d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
 
-// Busca
+// ── Formata número de seguidores ────────────────────────────────────────────
+function fmtFollowers(n){
+  if(!n) return '—';
+  if(n >= 1000000) return (n/1000000).toFixed(1).replace('.',',')+'M';
+  if(n >= 1000)    return (n/1000).toFixed(1).replace('.',',')+'k';
+  return String(n);
+}
+
+// ── Busca data.json do GitHub e atualiza todos os números ──────────────────
+const DATA_URL = 'https://raw.githubusercontent.com/dmoreirasilva/central-comando/main/data.json';
+
+fetch(DATA_URL + '?t=' + Date.now())
+  .then(r => r.json())
+  .then(data => {
+    // Super stats
+    if(data.audios_hipnose   != null) document.getElementById('stat-audios').textContent    = data.audios_hipnose;
+    if(data.clientes_milhas  != null) document.getElementById('stat-clientes').textContent  = data.clientes_milhas;
+    if(data.sites_publicados != null) document.getElementById('stat-sites').textContent     = data.sites_publicados;
+
+    if(data.instagram?.followers != null){
+      const f = fmtFollowers(data.instagram.followers);
+      document.getElementById('stat-seguidores').textContent = f;
+      document.getElementById('ig-followers').textContent    = f;
+    }
+
+    if(data.google_ads){
+      if(data.google_ads.budget_daily != null)
+        document.getElementById('stat-ads-budget').textContent = 'R$' + data.google_ads.budget_daily;
+      if(data.google_ads.status)
+        document.getElementById('stat-ads-status').textContent =
+          data.google_ads.status === 'ATIVO' ? 'Campanha ativa 24/7' : '⚠️ ' + data.google_ads.status;
+    }
+
+    if(data.youtube){
+      if(data.youtube.subscribers != null) document.getElementById('yt-subs').textContent   = data.youtube.subscribers;
+      if(data.youtube.videos      != null) document.getElementById('yt-videos').textContent = data.youtube.videos;
+    }
+
+    // Última atualização
+    if(data.updated_at){
+      const dt = new Date(data.updated_at);
+      const rel = document.getElementById('last-update');
+      rel.textContent = '↻ ' + dt.toLocaleString('pt-BR',{
+        day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'
+      });
+      rel.title = 'Última atualização automática';
+    }
+  })
+  .catch(() => {
+    // Silently fallback — valores hardcoded já estão na página
+  });
+
+// ── Busca ───────────────────────────────────────────────────────────────────
 function search(q){
   q = q.toLowerCase().trim();
   document.querySelectorAll('.card,.hero-card,.card-wide').forEach(c=>{
@@ -936,7 +1047,7 @@ function search(q){
   });
 }
 
-// Filtros de status
+// ── Filtros de status ────────────────────────────────────────────────────────
 function ftab(btn, val){
   document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
