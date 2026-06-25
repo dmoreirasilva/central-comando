@@ -1,19 +1,19 @@
 {
-  "updated_at": "2026-06-20T07:03:36",
+  "updated_at": "2026-06-19T08:30:00",
   "instagram": {
-    "followers": null,
+    "followers": 17200,
     "username": "diegomoreiraoficial__"
   },
   "youtube": {
-    "subscribers": 131,
-    "videos": 30,
+    "subscribers": 99,
+    "videos": 16,
     "channel": "DiegoMoreiraResetdoSono"
   },
   "audios_hipnose": 24,
-  "clientes_milhas": 53,
+  "clientes_milhas": 55,
   "google_ads": {
     "status": "ATIVO",
     "budget_daily": 25
   },
-  "sites_publicados": 6
+  "sites_publicados": 7
 }
